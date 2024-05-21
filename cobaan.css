@@ -1,0 +1,116 @@
+*{
+    text-decoration: none;
+}
+a{
+    color:inherit;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+#app {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+}
+
+.input {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.input label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.input input[type="text"],
+.input input[type="number"],
+.input input[type="date"] {
+    width: calc(50% - 10px); /* 50% width for each input with a gap of 20px between them */
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.input .nota,
+.input .barang {
+    flex: 1;
+}
+
+.input button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    padding: 10px;
+    text-align: center;
+}
+
+table th {
+    background-color: #f2f2f2;
+}
+
+table td {
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.totalan {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f2f2f2;
+}
+
+.totalan label {
+    font-weight: bold;
+}
+
+.totalan input[type="text"] {
+    width: calc(100% - 10px);
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: right;
+}
+
+.totalan button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.totalan button:hover {
+    background-color: #45a049;
+}

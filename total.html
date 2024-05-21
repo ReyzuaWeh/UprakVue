@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <link href="cobaan.css" rel="stylesheet"></link>
+</head>
+<body>
+    <div id="app">
+        <table width="100%" border="1">
+            <thead>
+                <th>ID Barang</th>
+                <th>Nama Barang</th>
+                <th>Harga Satuan</th>
+                <th>Kuantitas</th>
+                <th>Jumlah</th>
+            </thead>
+            <tr v-for="item in produk" :key="item.kodeBarang">
+                <td>{{item.kodeBarang}}</td>
+                <td>{{item.namaBarang}}</td>
+                <td>{{item.hargaBarang}}</td>
+                <td>{{item.qty}}</td>
+                <td>{{item.qty * item.hargaBarang}}</td>
+            </tr>
+        </table>
+        <div class="pemnayaranAkhir">
+            <p>Diskon : {{diskon*100}}%</p>
+            <table>
+                <tr>
+                    <td>Subtotal</td>
+                    <td>Diskon</td>
+                    <td>Total Akhir</td>
+                </tr>
+                <tr>
+                    <td>{{total}}</td>
+                    <td>{{setDiskonNominal}}</td>
+                    <td>{{total - diskonNominal}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        new Vue({
+            el:'#app',
+            data:{
+               produk: JSON.parse(localStorage.getItem('produk')),
+               diskon : localStorage.getItem('diskon'),
+               diskonNominal : 0,
+               subTotal : 0
+            },
+            computed:{
+                total : function(){
+                    this.subTotal =this.produk.reduce((total, item)=> total + item.qty * item.hargaBarang,0)
+                    return this.subTotal;
+                },
+                setDiskonNominal: function(){
+                    this.diskonNominal = this.diskon * this.subTotal;
+                    return this.diskonNominal;
+                }
+            }
+        })
+    });
+</script>
+
+</html>

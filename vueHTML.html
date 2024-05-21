@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-    <link href="style.css" rel="stylesheet"></link>
+    <link href="cobaan.css" rel="stylesheet"></link>
 </head>
 <body>
     <div id="app">
@@ -60,7 +60,9 @@
                 <label>Diskon : </label>
                 <input type="text" :value="setDiskon" readonly></input>
                 <label>Total Belanja : </label>
-                <input type="text" :value="diskon * subTotal"readonly></input>
+                <input type="text" :value="subTotal- (diskon * subTotal)"readonly></input>
+                <button><a @click="kirim" href="total.html">Kirim</a></button>
+                <button @click="deleteLS">Hapus LS</a></button>
             </div>
         </div>
     </div>
@@ -95,6 +97,14 @@
             kurangCart : function(index){
                 this.barang.splice(index,1);
             },
+            kirim:function(){
+                console.log('berhasil');
+                localStorage.setItem('produk', JSON.stringify(this.barang));
+                localStorage.setItem('diskon', this.diskon)
+            },
+            deleteLS: function(){
+                localStorage.clear();
+            }
         },
         computed:{
             selectedItem: function(){

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <link href="style.css" rel="stylesheet"></link>
+</head>
+<body>
+    <div id="app">
+        <center>
+            <h1>Toko Si Gjar</h1>
+        </center>
+        <div class="input">
+            <div class="nota">
+                <label>No. Nota :</label>
+                <input type="text" v-model:value="nota"></input>
+                <label>Pelanggan :</label>
+                <input type="text" v-model:value="pelanggan"></input>
+                <label>Tanggal :</label>
+                <input type="date" v-model="date"></input>
+                <label>Total Pembayaran :</label>
+                <input type="number" v-model="pembelian"></input>
+            </div>
+            <div class="barang">
+                <label>Kode Barang : </label>
+                <input type="number" v-model="kodeBarang">
+                <label>Nama Barang : </label>
+                <input type="text" v-model="namaBarang"></input>
+                <label>Harga Barang : </label>
+                <input type="number" v-model="hargaBarang"></input>
+                <label>Kuantitas :</label>
+                <input type="number" v-model="qty">
+            </div>
+            <button width="100%" @click="masukCart">Masukkan</button>
+        </div>
+        <table width="100%" border="1">
+            <thead>
+                <th>ID Barang</th>
+                <th>Nama Barang</th>
+                <th>Harga Satuan</th>
+                <th>Kuantitas</th>
+                <th>Jumlah</th>
+                <th>Opsi</th>
+            </thead>
+            <tr v-for="item in barang" :key="item.kodeBarang">
+                <td>{{item.kodeBarang}}</td>
+                <td>{{item.namaBarang}}</td>
+                <td>{{item.hargaBarang}}</td>
+                <td>{{item.qty}}</td>
+                <td>{{item.qty * item.hargaBarang}}</td>
+                <td><label @click="kurangCart">Hapus</label></td>
+            </tr>
+        </table>
+        <div class="totalan">
+            <div class="diskon">
+                <label>Subtotal Belanja : </label>
+                <input type="text" :value="total" readonly></input>
+                <label>Diskon : </label>
+                <input type="text" :value="setDiskon" readonly></input>
+                <label>Total Belanja : </label>
+                <input type="text" :value="diskon * subTotal"readonly></input>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    new Vue({
+        el:'#app',
+        data:{
+            nota: 0,
+            pelanggan: "",
+            tanggal: 0,
+            qty: 0,
+            pembelian: 300000,
+            kodeBarang: 0,
+            hargaBarang: 0,
+            namaBarang: "",
+            barang :[],
+            selectedItemId: 0,
+            diskon: 0,
+            date: '',
+            subTotal: 0
+        },
+        methods: {
+            masukCart: function(){
+                this.barang.push({
+                    kodeBarang : this.kodeBarang,
+                    namaBarang : this.namaBarang,
+                    hargaBarang : this.hargaBarang,
+                    qty: this.qty,
+                })
+            },
+            kurangCart : function(index){
+                this.barang.splice(index,1);
+            },
+        },
+        computed:{
+            selectedItem: function(){
+                return this.selectedItemId;
+            },
+            total : function(){
+                this.subTotal =this.barang.reduce((total, item)=> total + item.qty * item.hargaBarang,0)
+                return this.subTotal;
+            },
+            setDiskon: function(){
+                switch(this.barang.length){
+                    case 0:
+                        this.diskon = 0;
+                        return 0;
+                    case 1:
+                        this.diskon = 0;
+                        return 0;
+                    case 2:
+                        this.diskon = 0.1;
+                        return 10;
+                    case 3:
+                        this.diskon = 0.2;
+                        return 20;
+                    default:
+                        this.diskon = 0.45;
+                        return 45;
+                }
+            }
+        }
+    })
+</script>
+</html>

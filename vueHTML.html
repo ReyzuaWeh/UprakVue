@@ -34,6 +34,9 @@
                 <label>
                     Kuantitas : <input type="number" v-model.value="selectedItem.qty" @input="maxMinQty(selectedItem)" min="1" :max="selectedItem.maxQty">
                 </label>
+                <label>
+                    Stok Produk : <input type="number" :value="selectedItem.maxQty" readonly>
+                </label>
             </div>
             <button width="100%" @click="masukCart(selectedItem)">Masukkan</button>
         </div>

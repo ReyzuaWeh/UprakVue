@@ -9,6 +9,10 @@
 </head>
 <body>
     <div id="app">
+        <div class="nota">
+            <label><strong>Nama Pelanggan : {{nama}}</strong></label><br>
+            <label><strong>Tanggal Pembelian : {{tanggal}}</strong></label>
+        </div>
         <table width="100%" border="1">
             <thead>
                 <th>ID Barang</th>
@@ -17,26 +21,30 @@
                 <th>Kuantitas</th>
                 <th>Jumlah</th>
             </thead>
-            <tr v-for="item in produk" :key="item.kodeBarang">
-                <td>{{item.kodeBarang}}</td>
-                <td>{{item.namaBarang}}</td>
-                <td>{{item.hargaBarang}}</td>
+            <tr v-for="(item,index) in produk" :key="index">
+                <td>{{item.kode}}</td>
+                <td>{{item.nama}}</td>
+                <td>{{item.harga}}</td>
                 <td>{{item.qty}}</td>
-                <td>{{item.qty * item.hargaBarang}}</td>
+                <td>{{item.qty * item.harga}}</td>
             </tr>
         </table>
         <div class="pemnayaranAkhir">
             <p>Diskon : {{diskon*100}}%</p>
             <table>
                 <tr>
+                    <td>Pembayaran</td>
                     <td>Subtotal</td>
                     <td>Diskon</td>
                     <td>Total Akhir</td>
+                    <td>Kembalian</td>
                 </tr>
                 <tr>
+                    <td>{{pembayaran}}</td>
                     <td>{{total}}</td>
                     <td>{{setDiskonNominal}}</td>
                     <td>{{total - diskonNominal}}</td>
+                    <td>{{pembayaran - (total - diskonNominal)}}</td>
                 </tr>
             </table>
         </div>
@@ -49,12 +57,15 @@
             data:{
                produk: JSON.parse(localStorage.getItem('produk')),
                diskon : localStorage.getItem('diskon'),
+               nama :localStorage.getItem('pelanggan'),
+               pembayaran :localStorage.getItem('pembayaran'),
+               tanggal :localStorage.getItem('tanggal'),
                diskonNominal : 0,
                subTotal : 0
             },
             computed:{
                 total : function(){
-                    this.subTotal =this.produk.reduce((total, item)=> total + item.qty * item.hargaBarang,0)
+                    this.subTotal =this.produk.reduce((total, item)=> total + item.qty * item.harga,0)
                     return this.subTotal;
                 },
                 setDiskonNominal: function(){

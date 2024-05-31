@@ -14,26 +14,28 @@
         </center>
         <div class="input">
             <div class="nota">
-                <label>No. Nota :</label>
-                <input type="text" v-model:value="nota"></input>
                 <label>Pelanggan :</label>
-                <input type="text" v-model:value="pelanggan"></input>
+                <input type="text" v-model:value="pelanggan" required></input>
                 <label>Tanggal :</label>
-                <input type="date" v-model="date"></input>
+                <input type="date" v-model="tanggal" required></input>
                 <label>Total Pembayaran :</label>
-                <input type="number" v-model="pembelian"></input>
+                <input type="number" v-model="pembayaran" required></input>
             </div>
             <div class="barang">
-                <label>Kode Barang : </label>
-                <input type="number" v-model="kodeBarang">
-                <label>Nama Barang : </label>
-                <input type="text" v-model="namaBarang"></input>
-                <label>Harga Barang : </label>
-                <input type="number" v-model="hargaBarang"></input>
-                <label>Kuantitas :</label>
-                <input type="number" v-model="qty">
+                <label>
+                    Pilih Produk :
+                    <select v-model="selectedItem">
+                        <option v-for="(item,index) in barang" :value="item" :key="index">{{item.nama}}</option>
+                    </select>
+                </label>
+                <label>
+                    Harga : <input type="number" :value="selectedItem.harga"  readonly>
+                </label>
+                <label>
+                    Kuantitas : <input type="number" v-model.value="selectedItem.qty" @input="maxMinQty(selectedItem)" min="1" :max="selectedItem.maxQty">
+                </label>
             </div>
-            <button width="100%" @click="masukCart">Masukkan</button>
+            <button width="100%" @click="masukCart(selectedItem)">Masukkan</button>
         </div>
         <table width="100%" border="1">
             <thead>
@@ -44,13 +46,13 @@
                 <th>Jumlah</th>
                 <th>Opsi</th>
             </thead>
-            <tr v-for="item in barang" :key="item.kodeBarang">
-                <td>{{item.kodeBarang}}</td>
-                <td>{{item.namaBarang}}</td>
-                <td>{{item.hargaBarang}}</td>
+            <tr v-for="(item,index) in cart" :key="index">
+                <td>{{item.kode}}</td>
+                <td>{{item.nama}}</td>
+                <td>{{item.harga}}</td>
                 <td>{{item.qty}}</td>
-                <td>{{item.qty * item.hargaBarang}}</td>
-                <td><label @click="kurangCart">Hapus</label></td>
+                <td>{{item.qty * item.harga}}</td>
+                <td><button @click="kurangCart">Hapus</button></td>
             </tr>
         </table>
         <div class="totalan">
@@ -60,8 +62,8 @@
                 <label>Diskon : </label>
                 <input type="text" :value="setDiskon" readonly></input>
                 <label>Total Belanja : </label>
-                <input type="text" :value="subTotal- (diskon * subTotal)"readonly></input>
-                <button><a @click="kirim" href="total.html">Kirim</a></button>
+                <input type="text" :value="afterDiskon" readonly></input>
+                <button><a @click="kirim">Kirim</a></button>
                 <button @click="deleteLS">Hapus LS</a></button>
             </div>
         </div>
@@ -71,51 +73,80 @@
     new Vue({
         el:'#app',
         data:{
-            nota: 0,
             pelanggan: "",
-            tanggal: 0,
-            qty: 0,
-            pembelian: 300000,
-            kodeBarang: 0,
-            hargaBarang: 0,
-            namaBarang: "",
-            barang :[],
-            selectedItemId: 0,
+            tanggal: "",
+            barang : [
+                {
+                    kode : 'A1',
+                    nama : 'Barang1',
+                    harga : 50000,
+                    qty : 0,
+                    maxQty : 10
+                },
+                {
+                    kode : 'A2',
+                    nama : 'Barang2',
+                    harga : 75000,
+                    qty : 0,
+                    maxQty : 10
+                },
+                {
+                    kode : 'A3',
+                    nama : 'Barang Bagus',
+                    harga : 1000000,
+                    qty : 0,
+                    maxQty : 10
+                },
+            ],
+            pembayaran: 300000,
+            cart :[],
+            selectedItem: [],
             diskon: 0,
-            date: '',
-            subTotal: 0
+            subTotal: 0,
+            totalSetelah : 0
         },
         methods: {
-            masukCart: function(){
-                this.barang.push({
-                    kodeBarang : this.kodeBarang,
-                    namaBarang : this.namaBarang,
-                    hargaBarang : this.hargaBarang,
-                    qty: this.qty,
-                })
+            masukCart: function(index){
+                this.cart.push(index);
             },
             kurangCart : function(index){
-                this.barang.splice(index,1);
+                this.cart.splice(index,1);
             },
             kirim:function(){
-                console.log('berhasil');
-                localStorage.setItem('produk', JSON.stringify(this.barang));
-                localStorage.setItem('diskon', this.diskon)
+                if(this.pembayaran >= this.totalSetelah){
+                    console.log('berhasil');
+                    localStorage.setItem('produk', JSON.stringify(this.cart));
+                    localStorage.setItem('diskon', this.diskon)
+                    localStorage.setItem('pembayaran', this.pembayaran)
+                    localStorage.setItem('pelanggan', this.pelanggan)
+                    localStorage.setItem('tanggal', this.tanggal)
+                    window.location.href = 'total.html'
+                }else{
+                    alert(`Pembayaran hanya : ${this.pembayaran}\nHarus lebih besar dari total belanja : ${this.totalSetelah}`)
+                }
             },
             deleteLS: function(){
                 localStorage.clear();
+            },
+            maxMinQty: function(index){
+                if(index.qty < 0){
+                    return index.qty = 0
+                }else if(index.qty >index.maxQty){
+                    return index.qty = index.maxQty
+                }
             }
         },
         computed:{
-            selectedItem: function(){
-                return this.selectedItemId;
+            afterDiskon(){
+                this.totalSetelah = this.subTotal- (this.diskon * this.subTotal);
+                return this.totalSetelah;
             },
             total : function(){
-                this.subTotal =this.barang.reduce((total, item)=> total + item.qty * item.hargaBarang,0)
+                this.subTotal =this.cart.reduce((total, item)=> total + item.qty * item.harga,0)
                 return this.subTotal;
             },
             setDiskon: function(){
-                switch(this.barang.length){
+                switch(this.cart.length){
                     case 0:
                         this.diskon = 0;
                         return 0;
@@ -132,7 +163,14 @@
                         this.diskon = 0.45;
                         return 45;
                 }
+            },
+            formatValue(index) {
+                return index.toLocaleString('id-ID'); // Menggunakan locale 'id-ID' untuk format Indonesia
             }
+
+        },
+        watch:{
+            
         }
     })
 </script>

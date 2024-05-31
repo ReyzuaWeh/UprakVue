@@ -81,7 +81,7 @@
 </body>
 <script>
     if(localStorage.getItem('id')== null){
-        localStorage.setItem('id', 0)
+        localStorage.setItem('id', 1)
     }
     if(localStorage.getItem('barang')== null){
         localStorage.setItem('barang', '')
@@ -163,7 +163,7 @@
                     localStorage.setItem('pembayaran', this.pembayaran)
                     localStorage.setItem('pelanggan', this.pelanggan)
                     localStorage.setItem('tanggal', this.tanggal)
-                    localStorage.setItem('id', (this.nota++))
+                    localStorage.setItem('id', (++this.nota))
                     localStorage.setItem('barang', JSON.stringify(this.barang))
                     window.location.href ="total.html"
                 },

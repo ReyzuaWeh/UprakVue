@@ -9,179 +9,212 @@
 </head>
 <body>
     <div id="app">
-        <center>
-            <h1>Toko Si Gjar</h1>
-        </center>
-        <div class="input">
-            <div class="nota">
-                <label>Pelanggan :</label>
-                <input type="text" v-model:value="pelanggan" required></input>
-                <label>Tanggal :</label>
-                <input type="date" v-model="tanggal" required></input>
+            <center>
+                <h1>Toko Si Gjar</h1>
+            </center>
+            <div class="input">
+                <div class="nota">
+                    <label>ID Pembelian :</label>
+                    <input type="text" :value="nota" readonly></input>
+                    <label>Pelanggan :</label>
+                    <input type="text" v-model:value="pelanggan" required></input>
+                    <label>Tanggal :</label>
+                    <input type="date" v-model="tanggal" required></input>
+                </div>
+                <div class="barang">
+                    <label>
+                        Pilih Produk :
+                        <select v-model="selectedItem">
+                            <option v-for="(item,index) in barang" :value="item" :key="index">{{item.nama}}</option>
+                        </select>
+                    </label>
+                    <label>
+                        Harga : <input type="number" :value="selectedItem.harga"  readonly>
+                    </label>
+                    <label>
+                        Kuantitas : <input type="number" v-model="selectedItem.qty" @input="maxMinQty(selectedItem)" min="1" :max="selectedItem.maxQty">
+                    </label>
+                    <label>
+                        Stok Produk : <input type="number" :value="selectedItem.maxQty" readonly>
+                    </label>
+                </div>
+                <button width="100%" @click="masukCart(selectedItem)">Masukkan</button>
             </div>
-            <div class="barang">
-                <label>
-                    Pilih Produk :
-                    <select v-model="selectedItem">
-                        <option v-for="(item,index) in barang" :value="item" :key="index">{{item.nama}}</option>
-                    </select>
-                </label>
-                <label>
-                    Harga : <input type="number" :value="selectedItem.harga"  readonly>
-                </label>
-                <label>
-                    Kuantitas : <input type="number" v-model.value="selectedItem.qty" @input="maxMinQty(selectedItem)" min="1" :max="selectedItem.maxQty">
-                </label>
-                <label>
-                    Stok Produk : <input type="number" :value="selectedItem.maxQty" readonly>
-                </label>
+            <table v-if="cart.length !== 0" width="100%" border="1">
+                <thead>
+                    <th>ID Barang</th>
+                    <th>Nama Barang</th>
+                    <th>Harga Satuan</th>
+                    <th>Kuantitas</th>
+                    <th>Jumlah</th>
+                    <th>Opsi</th>
+                </thead>
+                <tr v-for="(item,index) in cart" :key="index">
+                    <td v-once>{{item.kode}}</td>
+                    <td v-once>{{item.nama}}</td>
+                    <td v-once>{{item.harga}}</td>
+                    <td v-once>{{item.qty}}</td>
+                    <td v-once>{{item.qty * item.harga}}</td>
+                    <td><button @click="kurangCart">Hapus</button></td>
+                </tr>
+            </table>
+            <div class="totalan">
+                <div class="diskon">
+                    <label>Subtotal Belanja : </label>
+                    <input type="text" :value="total" readonly></input>
+                    <label>Diskon : </label>
+                    <input type="text" :value="setDiskon" readonly></input>
+                    <label>Total Belanja : </label>
+                    <input type="text" :value="afterDiskon" readonly></input>
+                    <label>Bayar :</label>
+                    <input type="number" v-model="pembayaran" required></input>
+                    <label>Kembalian : </label>
+                    <input type="number" :value="pembayaran - afterDiskon" readonly></input>
+                    <form method="GET">
+                        <label class="alert" v-if="pembayaran < afterDiskon">DUITNYA KURANG</label><br>
+                    </form>
+                    <button type="submit" @click="kirim">Kirim</button>
+                    <button @click="deleteLS">Hapus LS</button>
+                </div>
             </div>
-            <button width="100%" @click="masukCart(selectedItem)">Masukkan</button>
-        </div>
-        <table width="100%" border="1">
-            <thead>
-                <th>ID Barang</th>
-                <th>Nama Barang</th>
-                <th>Harga Satuan</th>
-                <th>Kuantitas</th>
-                <th>Jumlah</th>
-                <th>Opsi</th>
-            </thead>
-            <tr v-for="(item,index) in cart" :key="index">
-                <td v-once>{{item.kode}}</td>
-                <td v-once>{{item.nama}}</td>
-                <td v-once>{{item.harga}}</td>
-                <td v-once>{{item.qty}}</td>
-                <td v-once>{{item.qty * item.harga}}</td>
-                <td><button @click="kurangCart">Hapus</button></td>
-            </tr>
-        </table>
-        <div class="totalan">
-            <div class="diskon">
-                <label>Subtotal Belanja : </label>
-                <input type="text" :value="total" readonly></input>
-                <label>Diskon : </label>
-                <input type="text" :value="setDiskon" readonly></input>
-                <label>Total Belanja : </label>
-                <input type="text" :value="afterDiskon" readonly></input>
-                <label>Bayar :</label>
-                <input type="number" v-model="pembayaran" required></input>
-                <label>Kembalian : </label>
-                <input type="number" :value="pembayaran - afterDiskon" readonly></input>
-                <label class="alert" v-if="pembayaran < afterDiskon">DUITNYA KURANG</label><br>
-                <button><a @click="kirim">Kirim</a></button>
-                <button @click="deleteLS">Hapus LS</a></button>
-            </div>
-        </div>
     </div>
 </body>
 <script>
-    new Vue({
-        el:'#app',
-        data:{
-            pelanggan: "",
-            tanggal: "",
-            barang : [
-                {
-                    kode : 'A1',
-                    nama : 'Barang1',
-                    harga : 50000,
-                    qty : 0,
-                    maxQty : 10
-                },
-                {
-                    kode : 'A2',
-                    nama : 'Barang2',
-                    harga : 75000,
-                    qty : 0,
-                    maxQty : 10
-                },
-                {
-                    kode : 'A3',
-                    nama : 'Barang Bagus',
-                    harga : 1000000,
-                    qty : 0,
-                    maxQty : 10
-                },
-            ],
-            pembayaran: 300000,
-            cart :[],
-            selectedItem: [],
-            diskon: 0,
-            subTotal: 0,
-            totalSetelah : 0
-        },
-        methods: {
-            masukCart: function(index){
-                index.maxQty -= index.qty
-                this.cart.push(index);
+    if(localStorage.getItem('id')== null){
+        localStorage.setItem('id', 0)
+    }
+    if(localStorage.getItem('barang')== null){
+        localStorage.setItem('barang', '')
+    }
+    document.addEventListener('DOMContentLoaded', function(){
+        new Vue({
+            el:'#app',
+            data:{
+                nota : localStorage.getItem('id') == 0 ? 1 : localStorage.getItem('id'),
+                pelanggan: "",
+                tanggal: "",
+                barang : localStorage.getItem('barang').length !== 0 ? JSON.parse(localStorage.getItem('barang')) : [
+                    {
+                        kode : 'A1',
+                        nama : 'Barang1',
+                        harga : 50000,
+                        qty : 0,
+                        maxQty : 10
+                    },
+                    {
+                        kode : 'A2',
+                        nama : 'Barang2',
+                        harga : 75000,
+                        qty : 0,
+                        maxQty : 10
+                    },
+                    {
+                        kode : 'A3',
+                        nama : 'Barang Bagus',
+                        harga : 1000000,
+                        qty : 0,
+                        maxQty : 10
+                    },
+                ],
+                pembayaran: 300000,
+                cart :[],
+                selectedItem: [],
+                diskon: 0,
+                subTotal: 0,
+                totalSetelah : 0
             },
-            kurangCart : function(index){
-                this.cart.splice(index,1);
-            },
-            kirim:function(){
-                if(this.pembayaran >= this.totalSetelah){
+            methods: {
+                masukCart: async function(index){
+                    if(index.length === 0){
+                        alert('Pilih Barangnya!');
+                        return 0
+                    }
+                    if(index.qty<=0){
+                        alert('Tentukan Kuantitasnya dengan benar!');
+                        return 0
+                    }
+                    if( index.qty > index.maxQty){
+                        alert('Tentukan Kuantitasnya dengan benar!');
+                        return 0
+                    }
+                    if(index.maxQty === 0){
+                        alert(`${index.nama} sudah habis!`);
+                        return 0
+                    }
+                    await(this.cart.push(index));
+                    index.maxQty -= index.qty
+                    console.log('IDnya : ',localStorage.getItem('id').length)
+                },
+                kurangCart : function(index){
+                    this.cart.splice(index,1);
+                },
+                kirim:function(){
+                    if(this.pembayaran <= this.totalSetelah){
+                        alert(`Pembayaran hanya : ${this.pembayaran}\nHarus lebih besar dari total belanja : ${this.totalSetelah}`);
+                        return 0;
+                    }
+                    if(this.cart.length <= 0){
+                        alert(`Isi data barang terlebih dahulu!`);
+                        return 0;
+                    }
                     console.log('berhasil');
                     localStorage.setItem('produk', JSON.stringify(this.cart));
                     localStorage.setItem('diskon', this.diskon)
                     localStorage.setItem('pembayaran', this.pembayaran)
                     localStorage.setItem('pelanggan', this.pelanggan)
                     localStorage.setItem('tanggal', this.tanggal)
-                    window.location.href = 'total.html'
-                }else{
-                    alert(`Pembayaran hanya : ${this.pembayaran}\nHarus lebih besar dari total belanja : ${this.totalSetelah}`)
+                    localStorage.setItem('id', (this.nota++))
+                    localStorage.setItem('barang', JSON.stringify(this.barang))
+                    window.location.href ="total.html"
+                },
+                deleteLS: function(){
+                    localStorage.clear();
+                },
+                maxMinQty: function(index){
+                    if(index.qty < 0){
+                        return index.qty = 0
+                    }else if(index.qty >index.maxQty){
+                        return index.qty = index.maxQty
+                    }
                 }
             },
-            deleteLS: function(){
-                localStorage.clear();
-            },
-            maxMinQty: function(index){
-                if(index.qty < 0){
-                    return index.qty = 0
-                }else if(index.qty >index.maxQty){
-                    return index.qty = index.maxQty
+            computed:{
+                afterDiskon(){
+                    this.totalSetelah = this.subTotal- (this.diskon * this.subTotal);
+                    return this.totalSetelah;
+                },
+                total : function(){
+                    this.subTotal =this.cart.reduce((total, item)=> total + item.qty * item.harga,0)
+                    return this.subTotal;
+                },
+                setDiskon: function(){
+                    switch(this.cart.length){
+                        case 0:
+                            this.diskon = 0;
+                            return 0;
+                        case 1:
+                            this.diskon = 0.05;
+                            return 0.05;
+                        case 2:
+                            this.diskon = 0.1;
+                            return 0.1;
+                        case 3:
+                            this.diskon = 0.15;
+                            return 0.15;
+                        case 4:
+                            this.diskon = 0.2;
+                            return 0.2;
+                        default:
+                            this.diskon = 0.3;
+                            return 0.3;
+                    }
+                },
+                formatValue(index) {
+                    return index.toLocaleString('id-ID'); // Menggunakan locale 'id-ID' untuk format Indonesia
                 }
-            }
-        },
-        computed:{
-            afterDiskon(){
-                this.totalSetelah = this.subTotal- (this.diskon * this.subTotal);
-                return this.totalSetelah;
+    
             },
-            total : function(){
-                this.subTotal =this.cart.reduce((total, item)=> total + item.qty * item.harga,0)
-                return this.subTotal;
-            },
-            setDiskon: function(){
-                switch(this.cart.length){
-                    case 0:
-                        this.diskon = 0;
-                        return 0;
-                    case 1:
-                        this.diskon = 0.05;
-                        return 0.05;
-                    case 2:
-                        this.diskon = 0.1;
-                        return 0.1;
-                    case 3:
-                        this.diskon = 0.15;
-                        return 0.15;
-                    case 4:
-                        this.diskon = 0.2;
-                        return 0.2;
-                    default:
-                        this.diskon = 0.3;
-                        return 0.3;
-                }
-            },
-            formatValue(index) {
-                return index.toLocaleString('id-ID'); // Menggunakan locale 'id-ID' untuk format Indonesia
-            }
-
-        },
-        watch:{
-            
-        }
+        })
     })
 </script>
 </html>

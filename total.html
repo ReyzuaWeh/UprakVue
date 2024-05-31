@@ -9,44 +9,57 @@
 </head>
 <body>
     <div id="app">
-        <div class="nota">
-            <label><strong>Nama Pelanggan : {{nama}}</strong></label><br>
-            <label><strong>Tanggal Pembelian : {{tanggal}}</strong></label>
-        </div>
-        <table width="100%" border="1">
-            <thead>
-                <th>ID Barang</th>
-                <th>Nama Barang</th>
-                <th>Harga Satuan</th>
-                <th>Kuantitas</th>
-                <th>Jumlah</th>
-            </thead>
-            <tr v-for="(item,index) in produk" :key="index">
-                <td>{{item.kode}}</td>
-                <td>{{item.nama}}</td>
-                <td>{{item.harga}}</td>
-                <td>{{item.qty}}</td>
-                <td>{{item.qty * item.harga}}</td>
-            </tr>
-        </table>
-        <div class="pemnayaranAkhir">
-            <p>Diskon : {{diskon*100}}%</p>
-            <table>
+        <div class="container" width="100%" v-if="produk != null">
+            <div class="nota">
+                <label>ID Pembelian :</label>
+                <input type="text" :value="id" readonly></input>
+                <label>Pelanggan :</label>
+                <input type="text" :value="nama" readonly></input>
+                <label>Tanggal :</label>
+                <input type="date" :value="tanggal" readonly></input>
+            </div>
+            <table width="100%" border="1">
                 <thead>
-                    <th>Pembayaran</th>
-                    <th>Subtotal</th>
-                    <th>Diskon</th>
-                    <th>Total Akhir</th>
-                    <th>Kembalian</th>
+                    <th>#</th>
+                    <th>ID Barang</th>
+                    <th>Nama Barang</th>
+                    <th>Harga Satuan</th>
+                    <th>Kuantitas</th>
+                    <th>Jumlah</th>
                 </thead>
-                <tr>
-                    <td>{{pembayaran}}</td>
-                    <td>{{total}}</td>
-                    <td>{{setDiskonNominal}}</td>
-                    <td>{{total - diskonNominal}}</td>
-                    <td>{{pembayaran - (total - diskonNominal)}}</td>
+                <tr v-for="(item,index) in produk" :key="index">
+                    <td>{{++index}}</td>
+                    <td>{{item.kode}}</td>
+                    <td>{{item.nama}}</td>
+                    <td>{{item.harga}}</td>
+                    <td>{{item.qty}}</td>
+                    <td>{{item.qty * item.harga}}</td>
                 </tr>
             </table>
+            <div class="pemnayaranAkhir">
+                <p>Diskon : {{diskon*100}}%</p>
+                <table>
+                    <thead>
+                        <th>Pembayaran</th>
+                        <th>Subtotal</th>
+                        <th>Diskon</th>
+                        <th>Total Akhir</th>
+                        <th>Kembalian</th>
+                    </thead>
+                    <tr>
+                        <td>{{pembayaran}}</td>
+                        <td>{{total}}</td>
+                        <td>{{setDiskonNominal}}</td>
+                        <td>{{total - diskonNominal}}</td>
+                        <td>{{pembayaran - (total - diskonNominal)}}</td>
+                    </tr>
+                </table>
+            </div>
+            <a href="vueHTML.html">Klik ini untuk kembali</a>
+        </div>
+        <div v-else>
+            <h1>ISI DATA PEMBAYARAN DI MAIN!</h1>
+            <a href="vueHTML.html">Ini link buat isi</a>
         </div>
     </div>
 </body>
@@ -55,6 +68,7 @@
         new Vue({
             el:'#app',
             data:{
+               id: localStorage.getItem('id'),
                produk: JSON.parse(localStorage.getItem('produk')),
                diskon : localStorage.getItem('diskon'),
                nama :localStorage.getItem('pelanggan'),

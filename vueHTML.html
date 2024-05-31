@@ -50,12 +50,12 @@
                     <th>Opsi</th>
                 </thead>
                 <tr v-for="(item,index) in cart" :key="index">
-                    <td v-once>{{item.kode}}</td>
-                    <td v-once>{{item.nama}}</td>
-                    <td v-once>{{item.harga}}</td>
-                    <td v-once>{{item.qty}}</td>
-                    <td v-once>{{item.qty * item.harga}}</td>
-                    <td><button @click="kurangCart">Hapus</button></td>
+                    <td>{{item.kode}}</td>
+                    <td>{{item.nama}}</td>
+                    <td>{{item.harga}}</td>
+                    <td>{{item.qty}}</td>
+                    <td>{{item.qty * item.harga}}</td>
+                    <td><button @click="kurangCart(index,item)">Hapus</button></td>
                 </tr>
             </table>
             <div class="totalan">
@@ -141,11 +141,17 @@
                         alert(`${index.nama} sudah habis!`);
                         return 0
                     }
-                    await(this.cart.push(index));
+                    const itemToAdd = { ...index };
+                    this.cart.push(itemToAdd);
                     index.maxQty -= index.qty
                     console.log('IDnya : ',localStorage.getItem('id').length)
                 },
-                kurangCart : function(index){
+                kurangCart : function(index,item){
+                    const barangnya = this.barang.findIndex(itemnya=> itemnya.kode === item.kode);
+                    console.log(barangnya)
+                    console.log(item.qty)
+                    console.log(this.barang[barangnya].maxQty)
+                    this.barang[barangnya].maxQty = Number(this.barang[barangnya].maxQty) + Number(this.cart[index].qty)
                     this.cart.splice(index,1);
                 },
                 kirim:function(){

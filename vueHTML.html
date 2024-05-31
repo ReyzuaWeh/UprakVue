@@ -70,10 +70,8 @@
                     <input type="number" v-model="pembayaran" required></input>
                     <label>Kembalian : </label>
                     <input type="number" :value="pembayaran - afterDiskon" readonly></input>
-                    <form method="GET">
-                        <label class="alert" v-if="pembayaran < afterDiskon">DUITNYA KURANG</label><br>
-                    </form>
-                    <button type="submit" @click="kirim">Kirim</button>
+                    <label class="alert" v-if="pembayaran < afterDiskon">DUITNYA KURANG</label><br>
+                    <button @click="kirim">Kirim</button>
                     <button @click="deleteLS">Hapus LS</button>
                 </div>
             </div>
@@ -81,7 +79,7 @@
 </body>
 <script>
     if(localStorage.getItem('id')== null){
-        localStorage.setItem('id', 1)
+        localStorage.setItem('id', 0)
     }
     if(localStorage.getItem('barang')== null){
         localStorage.setItem('barang', '')
@@ -90,7 +88,7 @@
         new Vue({
             el:'#app',
             data:{
-                nota : localStorage.getItem('id') == 0 ? 1 : localStorage.getItem('id'),
+                nota : localStorage.getItem('id') == 0 ? 0 : localStorage.getItem('id'),
                 pelanggan: "",
                 tanggal: "",
                 barang : localStorage.getItem('barang').length !== 0 ? JSON.parse(localStorage.getItem('barang')) : [
@@ -124,17 +122,13 @@
                 totalSetelah : 0
             },
             methods: {
-                masukCart: async function(index){
+                masukCart: function(index){
                     if(index.length === 0){
-                        alert('Pilih Barangnya!');
+                        alert('Pilih barangnya!');
                         return 0
                     }
-                    if(index.qty<=0){
-                        alert('Tentukan Kuantitasnya dengan benar!');
-                        return 0
-                    }
-                    if( index.qty > index.maxQty){
-                        alert('Tentukan Kuantitasnya dengan benar!');
+                    if(index.qty<=0 || index.qty > index.maxQty){
+                        alert('Tentukan kuantitasnya dengan benar!');
                         return 0
                     }
                     if(index.maxQty === 0){
@@ -162,6 +156,11 @@
                     }
                     if(this.cart.length <= 0){
                         alert(`Isi data barang terlebih dahulu!`);
+                        return 0;
+                    }
+                    console.log(this.tanggal)
+                    if(this.tanggal == ''|| this.pelanggan == ''){
+                        alert(`Isi data dengan benar!`);
                         return 0;
                     }
                     console.log('berhasil');
@@ -216,10 +215,6 @@
                             return 0.3;
                     }
                 },
-                formatValue(index) {
-                    return index.toLocaleString('id-ID'); // Menggunakan locale 'id-ID' untuk format Indonesia
-                }
-    
             },
         })
     })

@@ -144,6 +144,7 @@
                     const itemToAdd = { ...index };
                     this.cart.push(itemToAdd);
                     index.maxQty -= index.qty
+                    index.qty = 0;
                     console.log('IDnya : ',localStorage.getItem('id').length)
                 },
                 kurangCart : function(index,item){

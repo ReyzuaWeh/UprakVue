@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Uprak Vue</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
     <link href="cobaan.css" rel="stylesheet"></link>
 </head>
@@ -55,7 +55,7 @@
                     <td>{{item.harga}}</td>
                     <td>{{item.qty}}</td>
                     <td>{{item.qty * item.harga}}</td>
-                    <td><button @click="kurangCart(index,item)">Hapus</button></td>
+                    <td><button class="hapus" @click="kurangCart(index,item)">Hapus</button></td>
                 </tr>
             </table>
             <div class="totalan">
@@ -83,6 +83,9 @@
     }
     if(localStorage.getItem('barang')== null){
         localStorage.setItem('barang', '')
+    }
+    if(localStorage.getItem('cart')== null){
+        localStorage.setItem('cart', '')
     }
     document.addEventListener('DOMContentLoaded', function(){
         new Vue({
@@ -115,7 +118,7 @@
                     },
                 ],
                 pembayaran: 300000,
-                cart :[],
+                cart : localStorage.getItem('cart').length !== 0 ? JSON.parse(localStorage.getItem('cart')) :[],
                 selectedItem: [],
                 diskon: 0,
                 subTotal: 0,
@@ -139,7 +142,7 @@
                     this.cart.push(itemToAdd);
                     index.maxQty -= index.qty
                     index.qty = 0;
-                    console.log('IDnya : ',localStorage.getItem('id').length)
+                    localStorage.setItem('cart', JSON.stringify(this.cart))
                 },
                 kurangCart : function(index,item){
                     const barangnya = this.barang.findIndex(itemnya=> itemnya.kode === item.kode);
@@ -148,6 +151,7 @@
                     console.log(this.barang[barangnya].maxQty)
                     this.barang[barangnya].maxQty = Number(this.barang[barangnya].maxQty) + Number(this.cart[index].qty)
                     this.cart.splice(index,1);
+                    localStorage.setItem('cart', JSON.stringify(this.cart))
                 },
                 kirim:function(){
                     if(this.pembayaran <= this.totalSetelah){
